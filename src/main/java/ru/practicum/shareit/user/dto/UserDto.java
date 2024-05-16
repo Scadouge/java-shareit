@@ -1,18 +1,18 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.user.dto;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
+import javax.validation.constraints.Email;
+
 @Value
 @Builder(toBuilder = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Item {
+public class UserDto {
     @EqualsAndHashCode.Include
     Long id;
     String name;
-    String description;
-    Boolean available;
-    Long ownerId;
-    Long requestId;
+    @Email(message = "Неверный формат почты")
+    String email;
 }
