@@ -6,7 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.item.validation.RequiredItemData;
+import ru.practicum.shareit.validation.ValidationGroup;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -23,7 +23,8 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ItemDto createItem(@Valid @RequiredItemData @RequestBody ItemDto itemDto,
+    @Validated({ValidationGroup.OnCreate.class})
+    public ItemDto createItem(@Valid @RequestBody ItemDto itemDto,
                               @RequestHeader(HEADER_USER_ID) Long userId) {
         log.info("Создание предмета itemDto={}", itemDto);
         return itemService.create(itemDto, userId);
@@ -42,6 +43,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
+    @Validated({ValidationGroup.OnUpdate.class})
     public ItemDto updateItem(@PathVariable Long itemId,
                               @Valid @RequestBody ItemDto itemDto,
                               @RequestHeader(HEADER_USER_ID) Long userId) {
