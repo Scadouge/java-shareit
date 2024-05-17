@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.NotAllowedException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.service.ItemMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.Collection;
@@ -57,17 +58,7 @@ public class ItemStorageInMemory implements ItemStorage {
         if (!Objects.equals(oldItem.getOwnerId(), item.getOwnerId())) {
             throw new NotAllowedException("Изменять предмет может только владелец");
         }
-        Item.ItemBuilder builder = oldItem.toBuilder();
-        if (item.getName() != null) {
-            builder.name(item.getName());
-        }
-        if (item.getDescription() != null) {
-            builder.description(item.getDescription());
-        }
-        if (item.getAvailable() != null) {
-            builder.available(item.getAvailable());
-        }
-        Item updatedItem = builder.build();
+        Item updatedItem = ItemMapper.updateModel(oldItem, item);
         items.put(item.getId(), updatedItem);
         return updatedItem;
     }

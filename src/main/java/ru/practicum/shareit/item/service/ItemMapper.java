@@ -24,4 +24,18 @@ public class ItemMapper {
                 .available(item.getAvailable())
                 .build();
     }
+
+    public Item updateModel(Item oldItem, Item newItem) {
+        Item.ItemBuilder builder = oldItem.toBuilder();
+        if (newItem.getName() != null) {
+            builder.name(newItem.getName());
+        }
+        if (newItem.getDescription() != null) {
+            builder.description(newItem.getDescription());
+        }
+        if (newItem.getAvailable() != null) {
+            builder.available(newItem.getAvailable());
+        }
+        return builder.build();
+    }
 }

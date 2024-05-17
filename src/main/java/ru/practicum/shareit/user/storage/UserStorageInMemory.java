@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.UniqueFieldConflictException;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.service.UserMapper;
 
 import java.util.*;
 
@@ -57,15 +58,10 @@ public class UserStorageInMemory implements UserStorage {
         if (oldUser == null) {
             throw new NotFoundException(user.getId());
         }
-        User.UserBuilder builder = oldUser.toBuilder();
-        if (user.getName() != null) {
-            builder.name(user.getName());
-        }
         if (user.getEmail() != null) {
             checkEmail(user);
-            builder.email(user.getEmail());
         }
-        User updatedUser = builder.build();
+        User updatedUser = UserMapper.updateModel(oldUser, user);
         users.put(user.getId(), updatedUser);
         return updatedUser;
     }

@@ -21,4 +21,15 @@ public class UserMapper {
                 .email(user.getEmail())
                 .build();
     }
+
+    public User updateModel(User oldUser, User newUser) {
+        User.UserBuilder builder = oldUser.toBuilder();
+        if (newUser.getName() != null) {
+            builder.name(newUser.getName());
+        }
+        if (newUser.getEmail() != null) {
+            builder.email(newUser.getEmail());
+        }
+        return builder.build();
+    }
 }
