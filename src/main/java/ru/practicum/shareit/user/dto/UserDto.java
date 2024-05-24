@@ -15,12 +15,14 @@ import javax.validation.constraints.Size;
 public class UserDto {
     @EqualsAndHashCode.Include
     Long id;
+
     @NotNull(groups = ValidationGroup.OnCreate.class)
-    @Size(min = 2, message = "Имя не должно быть меньше 2 символов.")
-    @Size(max = 30, message = "Имя не должно быть больше 30 символов.")
+    @Size(min = 2, max = 30, message = "Длина имени должно быть в диапазоне 2-30 символов.")
     String name;
+
     @NotNull(groups = ValidationGroup.OnCreate.class)
     @Size(min = 1, message = "Неверный формат почты")
-    @Email(message = "Неверный формат почты")
+    @Email(message = "Неверный формат почты", regexp = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
+            + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$")
     String email;
 }

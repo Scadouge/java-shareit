@@ -14,14 +14,15 @@ import javax.validation.constraints.Size;
 public class ItemDto {
     @EqualsAndHashCode.Include
     Long id;
+
     @NotNull(groups = ValidationGroup.OnCreate.class)
-    @Size(min = 2, message = "Длина названия не должна быть меньше 2 символов.")
-    @Size(max = 30, message = "Длина названия не должна превышать 30 символов.")
+    @Size(min = 2, max = 30, message = "Длина названия должна быть в диапазоне 2-30 символов.")
     String name;
+
     @NotNull(groups = ValidationGroup.OnCreate.class)
-    @Size(min = 2, message = "Длина описания не должна быть меньше 2 символов.")
-    @Size(max = 200, message = "Длина описания не должна превышать 200 символов.")
+    @Size(min = 2, max = 200, message = "Длина описания должна быть в диапазоне 2-200 символов.")
     String description;
+
     @NotNull(groups = ValidationGroup.OnCreate.class)
     Boolean available;
 }
