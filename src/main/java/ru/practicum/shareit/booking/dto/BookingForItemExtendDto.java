@@ -4,21 +4,17 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
 
 @Value
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class BookingDto {
+public class BookingForItemExtendDto {
     @EqualsAndHashCode.Include
     Long id;
 
-    ItemDto item;
-
-    UserDto booker;
+    Long bookerId;
 
     BookingStatus status;
 

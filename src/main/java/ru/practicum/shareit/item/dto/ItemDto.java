@@ -1,18 +1,19 @@
 package ru.practicum.shareit.item.dto;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import ru.practicum.shareit.validation.ValidationGroup;
-
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 @Value
 @Builder(toBuilder = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ItemDto {
     @EqualsAndHashCode.Include
+    @Null(groups = ValidationGroup.OnCreate.class)
     Long id;
 
     @NotNull(groups = ValidationGroup.OnCreate.class)

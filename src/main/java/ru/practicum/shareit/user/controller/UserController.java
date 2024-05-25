@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -8,7 +9,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.validation.ValidationGroup;
 
-import javax.validation.Valid;
 import java.util.Collection;
 
 @RestController
@@ -42,7 +42,7 @@ public class UserController {
     @Validated({ValidationGroup.OnUpdate.class})
     public UserDto updateUser(@PathVariable Long userId, @Valid @RequestBody UserDto userDto) {
         log.info("Обновление пользователя userDto={}", userDto);
-        return userService.update(userDto.toBuilder().id(userId).build());
+        return userService.update(userDto, userId);
     }
 
     @DeleteMapping("{userId}")
