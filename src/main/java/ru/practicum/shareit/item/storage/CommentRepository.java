@@ -12,6 +12,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Fetch(FetchMode.JOIN)
     <T> T findByAuthorIdAndItemId(Long authorId, Long itemId, Class<T> type);
 
-    @Fetch(FetchMode.JOIN)
     <T> List<T> findAllByItemIdIn(Set<Long> itemIds, Class<T> type);
 }

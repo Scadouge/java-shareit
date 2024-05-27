@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,9 @@ public class BookingForItemExtendDto {
     Long id;
 
     Long bookerId;
+
+    @JsonIgnore
+    Long itemId;
 
     BookingStatus status;
 

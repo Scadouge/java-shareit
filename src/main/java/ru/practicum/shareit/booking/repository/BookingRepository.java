@@ -41,8 +41,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Fetch(FetchMode.JOIN)
     List<Booking> findAllByItemOwnerIdOrderByEndDesc(Long ownerId);
 
-    @Fetch(FetchMode.JOIN)
-    List<Booking> findAllByItemIdIn(Set<Long> itemIds);
+    <T> List<T> findAllByItemIdIn(Set<Long> itemIds, Class<T> type);
 
     List<Booking> findAllByItemIdAndBookerIdAndEndBefore(Long itemId, Long bookerId, LocalDateTime dateTime);
 }

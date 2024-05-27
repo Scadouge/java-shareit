@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,10 @@ public class CommentDto {
     @EqualsAndHashCode.Include
     @Null
     Long id;
+
+    @JsonIgnore
+    @Null
+    Long itemId;
 
     @NotNull
     @Size(min = 1, max = 255, message = "Текст комментария должен быть в диапазоне 1-255 символов.")
