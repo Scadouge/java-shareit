@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -12,6 +11,7 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.utils.Headers;
 import ru.practicum.shareit.validation.ValidationGroup;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
 

@@ -1,16 +1,18 @@
 package ru.practicum.shareit.booking.dto;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.validation.ValidBookingInterval;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.time.LocalDateTime;
 
 @Value
+@RequiredArgsConstructor
 @Builder(toBuilder = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ValidBookingInterval(message = "Некорректное время бронирования")

@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking.model;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +7,7 @@ import lombok.Setter;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 import static ru.practicum.shareit.utils.SqlHelper.*;
@@ -39,11 +39,9 @@ public class Booking {
     @JoinColumn(name = BOOKING_BOOKER_ID)
     private User booker;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = BOOKING_DATE_START)
     private LocalDateTime start;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = BOOKING_DATE_END)
     private LocalDateTime end;
 }

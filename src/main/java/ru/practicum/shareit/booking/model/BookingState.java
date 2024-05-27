@@ -1,6 +1,6 @@
 package ru.practicum.shareit.booking.model;
 
-import jakarta.validation.ValidationException;
+import javax.validation.ValidationException;
 
 public enum BookingState {
     ALL,
