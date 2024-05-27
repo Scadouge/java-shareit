@@ -7,7 +7,6 @@ import ru.practicum.shareit.user.model.User;
 
 @Mapper(componentModel = "spring")
 public interface CommentMapper {
-    @Mapping(target = "authorId", source = "author.id")
     @Mapping(target = "itemId", source = "itemId")
     @Mapping(target = "author", source = "author")
     @Mapping(target = "id", source = "commentDto.id")

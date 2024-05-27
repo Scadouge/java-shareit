@@ -28,9 +28,6 @@ public class Booking {
     @JoinColumn(name = BOOKING_ITEM_ID)
     private Item item;
 
-    @Column(name = BOOKING_ITEM_ID, insertable = false, updatable = false)
-    private Long itemId;
-
     @Enumerated(EnumType.STRING)
     @Column(name = BOOKING_STATUS)
     private BookingStatus status;

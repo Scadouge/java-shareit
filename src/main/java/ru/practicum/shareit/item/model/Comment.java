@@ -30,9 +30,6 @@ public class Comment {
     @JoinColumn(name = COMMENT_AUTHOR_ID)
     private User author;
 
-    @Column(name = COMMENT_AUTHOR_ID, insertable = false, updatable = false)
-    private Long authorId;
-
     @Column(name = COMMENT_TEXT, nullable = false)
     private String text;
 
