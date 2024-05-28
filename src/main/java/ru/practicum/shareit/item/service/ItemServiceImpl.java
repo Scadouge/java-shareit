@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingForItemExtendDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -36,6 +37,7 @@ public class ItemServiceImpl implements ItemService {
     private final CommentMapper commentMapper;
 
     @Override
+    @Transactional
     public ItemDto create(ItemDto itemDto, Long userId) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         Item item = itemMapper.toModel(itemDto, userId);
@@ -44,6 +46,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ItemExtendDto get(Long id, Long userId) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         Item item = itemRepository.findById(id, Item.class).orElseThrow(() -> new NotFoundException(id));
@@ -53,6 +56,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<ItemExtendDto> getAll(Long userId) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         List<Item> items = itemRepository.findAllByOwnerId(userId, Item.class);
@@ -60,6 +64,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public ItemDto update(ItemDto itemDto, Long itemId, Long userId) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         Item savedItem = itemRepository.findById(itemId)
@@ -72,12 +77,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<ItemDto> searchAvailableItems(String text) {
         return itemRepository.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailable(text,
                 text, true, ItemDto.class);
     }
 
     @Override
+    @Transactional
     public CommentDto createComment(CommentDto commentDto, Long itemId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         Comment comment = commentRepository.findByAuthorIdAndItemId(userId, itemId, Comment.class);

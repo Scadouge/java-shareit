@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -32,6 +33,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingMapper bookingMapper;
 
     @Override
+    @Transactional
     public BookingDto createBooking(Long userId, BookingCreateDto bookingCreateDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         Item item = itemRepository.findById(bookingCreateDto.getItemId())
@@ -49,6 +51,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto updateBookingStatus(Long userId, Long bookingId, boolean approved) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException(bookingId));
@@ -63,6 +66,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BookingDto getBooking(Long userId, Long bookingId) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException(bookingId));
@@ -74,6 +78,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<BookingDto> getBookingsForUser(Long userId, BookingState state) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         List<Booking> result;
@@ -104,6 +109,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<BookingDto> getBookingsForItemOwner(Long userId, BookingState state) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         List<Booking> result;
