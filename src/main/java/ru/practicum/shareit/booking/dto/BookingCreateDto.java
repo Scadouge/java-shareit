@@ -7,6 +7,7 @@ import lombok.Value;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.validation.ValidBookingInterval;
 
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import java.time.LocalDateTime;
@@ -28,8 +29,10 @@ public class BookingCreateDto {
     BookingStatus status;
 
     @NotNull(message = "Дата начала бронирования не может отсутствовать")
+    @FutureOrPresent
     LocalDateTime start;
 
     @NotNull(message = "Дата окончания бронирования не может отсутствовать")
+    @FutureOrPresent
     LocalDateTime end;
 }
