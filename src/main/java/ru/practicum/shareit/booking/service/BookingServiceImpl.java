@@ -79,23 +79,22 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> result;
         switch (state) {
             case ALL:
-                result = bookingRepository.findAllByBookerIdOrderByEndDesc(userId);
+                result = bookingRepository.findBookingsForUserAll(userId);
                 break;
             case CURRENT:
-                result = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfter(userId,
-                        LocalDateTime.now(), LocalDateTime.now());
+                result = bookingRepository.findBookingsForUserCurrent(userId, LocalDateTime.now(), LocalDateTime.now());
                 break;
             case PAST:
-                result = bookingRepository.findAllByBookerIdAndEndBeforeOrderByEndDesc(userId, LocalDateTime.now());
+                result = bookingRepository.findBookingsForUserPast(userId, LocalDateTime.now());
                 break;
             case FUTURE:
-                result = bookingRepository.findAllByBookerIdAndStartAfterOrderByEndDesc(userId, LocalDateTime.now());
+                result = bookingRepository.findBookingsForUserFuture(userId, LocalDateTime.now());
                 break;
             case WAITING:
-                result = bookingRepository.findAllByBookerIdAndStatusOrderByEndDesc(userId, BookingStatus.WAITING);
+                result = bookingRepository.findBookingsForUserByStatus(userId, BookingStatus.WAITING);
                 break;
             case REJECTED:
-                result = bookingRepository.findAllByBookerIdAndStatusOrderByEndDesc(userId, BookingStatus.REJECTED);
+                result = bookingRepository.findBookingsForUserByStatus(userId, BookingStatus.REJECTED);
                 break;
             default:
                 log.warn("Неизвестный параметр фильтрации state={}", state);
@@ -105,32 +104,27 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<BookingDto> getBookingsForItems(Long userId, BookingState state) {
+    public Collection<BookingDto> getBookingsForItemOwner(Long userId, BookingState state) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         List<Booking> result;
         switch (state) {
             case ALL:
-                result = bookingRepository.findAllByItemOwnerIdOrderByEndDesc(userId);
+                result = bookingRepository.findBookingsForItemOwnerAll(userId);
                 break;
             case CURRENT:
-                result = bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfter(userId,
-                        LocalDateTime.now(), LocalDateTime.now());
+                result = bookingRepository.findBookingsForItemOwnerCurrent(userId, LocalDateTime.now(), LocalDateTime.now());
                 break;
             case PAST:
-                result = bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByEndDesc(userId,
-                        LocalDateTime.now());
+                result = bookingRepository.findBookingsForItemOwnerPast(userId, LocalDateTime.now());
                 break;
             case FUTURE:
-                result = bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByEndDesc(userId,
-                        LocalDateTime.now());
+                result = bookingRepository.findBookingsForItemOwnerFuture(userId, LocalDateTime.now());
                 break;
             case WAITING:
-                result = bookingRepository.findAllByItemOwnerIdAndStatusOrderByEndDesc(userId,
-                        BookingStatus.WAITING);
+                result = bookingRepository.findBookingsForItemOwnerStatus(userId, BookingStatus.WAITING);
                 break;
             case REJECTED:
-                result = bookingRepository.findAllByItemOwnerIdAndStatusOrderByEndDesc(userId,
-                        BookingStatus.REJECTED);
+                result = bookingRepository.findBookingsForItemOwnerStatus(userId, BookingStatus.REJECTED);
                 break;
             default:
                 log.warn("Неизвестный параметр фильтрации state={}", state);

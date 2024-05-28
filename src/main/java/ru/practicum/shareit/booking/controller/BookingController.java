@@ -44,7 +44,7 @@ public class BookingController {
     public Collection<BookingDto> getBookingsByStateOwner(@RequestHeader(Headers.HEADER_USER_ID) Long userId,
                                                           @RequestParam(required = false) String state) {
         log.info("Получение списка бронирований владельцем userId={}, фильтр по state={}", userId, state);
-        return bookingService.getBookingsForItems(userId, BookingState.parseState(state));
+        return bookingService.getBookingsForItemOwner(userId, BookingState.parseState(state));
     }
 
     @PatchMapping("/{bookingId}")
