@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
@@ -33,6 +34,7 @@ public class Comment {
     @Column(name = COMMENT_TEXT, nullable = false)
     private String text;
 
+    @CreationTimestamp
     @Column(name = COMMENT_CREATED, nullable = false)
     private LocalDateTime created;
 }

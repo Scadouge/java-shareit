@@ -87,9 +87,7 @@ public class ItemServiceImpl implements ItemService {
         List<Booking> bookings = bookingRepository.findAllByItemIdAndBookerIdAndEndBefore(itemId, userId, LocalDateTime.now());
         bookings.stream().filter(b -> b.getStatus() == BookingStatus.APPROVED).findFirst().orElseThrow(() ->
                 new ValidationException("Пользователь не бронировал этот предмет для оставления отзывов"));
-        Comment newComment = commentMapper.toModel(commentDto, user, itemId);
-        newComment.setCreated(LocalDateTime.now());
-        return commentMapper.toDto(commentRepository.save(newComment));
+        return commentMapper.toDto(commentRepository.save(commentMapper.toModel(commentDto, user, itemId)));
     }
 
     private Collection<ItemExtendDto> getItemsExtendedInfo(List<Item> items, boolean withComments, boolean withBooking) {
