@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingForItemExtendDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingMapper;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.NotAllowedException;
@@ -35,6 +36,7 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
     private final ItemMapper itemMapper;
     private final CommentMapper commentMapper;
+    private final BookingMapper bookingMapper;
 
     @Override
     @Transactional
@@ -99,55 +101,43 @@ public class ItemServiceImpl implements ItemService {
 
     private Collection<ItemExtendDto> getItemsExtendedInfo(List<Item> items, boolean withComments, boolean withBooking) {
         Set<Long> itemIds = items.stream().map(Item::getId).collect(Collectors.toSet());
-        Map<Long, List<CommentDto>> commentMapping = withComments ? getCommentMapping(itemIds) : null;
-        Map<Long, List<BookingForItemExtendDto>> bookingMapping = withBooking ? getBookingMapping(itemIds) : null;
-        return getItemsExtendedInfo(items, commentMapping, bookingMapping);
-    }
 
-    private Map<Long, List<CommentDto>> getCommentMapping(Set<Long> itemIds) {
-        return commentRepository.findAllByItemIdIn(itemIds, CommentDto.class).stream()
-                .collect(Collectors.groupingBy(CommentDto::getItemId));
-    }
+        Map<Long, List<CommentDto>> commentMapping = null;
+        if (withComments) {
+            commentMapping = commentRepository.findAllByItemIdIn(itemIds, CommentDto.class)
+                    .stream().collect(Collectors.groupingBy(CommentDto::getItemId));
+        }
 
-    private Map<Long, List<BookingForItemExtendDto>> getBookingMapping(Set<Long> itemIds) {
-        return bookingRepository.findAllByItemIdIn(itemIds, BookingForItemExtendDto.class).stream()
-                .collect(Collectors.groupingBy(BookingForItemExtendDto::getItemId));
-    }
+        Map<Long, List<BookingForItemExtendDto>> nextBookingMapping = null;
+        Map<Long, List<BookingForItemExtendDto>> lastBookingMapping = null;
+        if (withBooking) {
+            LocalDateTime now = LocalDateTime.now();
+            nextBookingMapping = bookingRepository
+                    .findNextBookingWithStatus(itemIds, now, BookingStatus.APPROVED, Booking.class).stream()
+                    .map(bookingMapper::toItemExtendDto)
+                    .collect(Collectors.groupingBy(BookingForItemExtendDto::getItemId));
+            lastBookingMapping = bookingRepository
+                    .findLastBookingWithStatus(itemIds, now, BookingStatus.APPROVED, Booking.class).stream()
+                    .map(bookingMapper::toItemExtendDto)
+                    .collect(Collectors.groupingBy(BookingForItemExtendDto::getItemId));
+        }
 
-    private Collection<ItemExtendDto> getItemsExtendedInfo(List<Item> items,
-                                                           Map<Long, List<CommentDto>> commentMapping,
-                                                           Map<Long, List<BookingForItemExtendDto>> bookingMapping) {
         Collection<ItemExtendDto> itemExtendDtos = new ArrayList<>();
-        LocalDateTime now = LocalDateTime.now();
         for (Item item : items) {
-            BookingForItemExtendDto last = null;
-            BookingForItemExtendDto next = null;
             List<CommentDto> commentsList = new ArrayList<>();
             if (commentMapping != null && commentMapping.get(item.getId()) != null) {
                 commentsList = commentMapping.get(item.getId());
             }
-            if (bookingMapping != null && bookingMapping.get(item.getId()) != null) {
-                LinkedList<BookingForItemExtendDto> collect = bookingMapping.get(item.getId()).stream()
-                        .sorted(Comparator.comparing(BookingForItemExtendDto::getEnd))
-                        .collect(Collectors.toCollection(LinkedList::new));
-                for (BookingForItemExtendDto booking : collect) {
-                    if (booking.getStatus() == BookingStatus.REJECTED) {
-                        continue;
-                    }
-                    if ((booking.getEnd().isBefore(now))
-                            || booking.getStart().isBefore(now) && booking.getEnd().isAfter(now)) {
-                        last = booking;
-                    } else {
-                        next = booking;
-                    }
-                    if (last != null && next != null) {
-                        break;
-                    }
-                }
+            BookingForItemExtendDto last = null;
+            if (lastBookingMapping != null && lastBookingMapping.containsKey(item.getId())) {
+                last = lastBookingMapping.get(item.getId()).stream().findFirst().orElse(null);
+            }
+            BookingForItemExtendDto next = null;
+            if (nextBookingMapping != null && nextBookingMapping.containsKey(item.getId())) {
+                next = nextBookingMapping.get(item.getId()).stream().findFirst().orElse(null);
             }
             itemExtendDtos.add(itemMapper.toItemBookingInfoDto(item, commentsList, last, next));
         }
-        return itemExtendDtos.stream().sorted(Comparator.comparing(ItemExtendDto::getId))
-                .collect(Collectors.toList());
+        return itemExtendDtos;
     }
 }
