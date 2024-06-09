@@ -2,18 +2,22 @@ package ru.practicum.shareit.user.dto;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import ru.practicum.shareit.validation.ValidationGroup;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 
 @Value
+@RequiredArgsConstructor
 @Builder(toBuilder = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class UserDto {
     @EqualsAndHashCode.Include
+    @Null
     Long id;
 
     @NotNull(groups = ValidationGroup.OnCreate.class)
