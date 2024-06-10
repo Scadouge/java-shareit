@@ -1,9 +1,6 @@
 package ru.practicum.shareit.user.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -15,10 +12,12 @@ import static ru.practicum.shareit.utils.SqlHelper.*;
 @Setter
 @Entity
 @Table(name = TABLE_USERS, schema = SCHEMA)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = USER_ID)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(name = USER_NAME, nullable = false)
