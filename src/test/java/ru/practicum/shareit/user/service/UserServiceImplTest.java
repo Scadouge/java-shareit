@@ -9,8 +9,11 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
+import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 
 @SpringBootTest
 @Transactional
@@ -20,10 +23,18 @@ class UserServiceImplTest {
     private final UserService userService;
 
     @Test
-    void shouldSaveAndDeleteUser() {
+    void shouldSaveAndUpdateAndGetAndDeleteUser() {
         User user = userService.create(new User(null, "User 1", "user1@mail.com"));
         User savedUser = userRepository.findById(user.getId()).orElseThrow();
-        assertEquals(user, savedUser);
+        assertEquals(savedUser, user);
+        assertEquals(savedUser, userService.get(user.getId()));
+        assertThat(userService.getAll(), contains(savedUser));
+
+        final User userUpdater = new User(null, "User updated name", null);
+        userService.update(userUpdater, user.getId());
+        assertEquals(savedUser.getName(), "User updated name");
+        assertEquals(savedUser.getEmail(), "user1@mail.com");
+
         userRepository.deleteById(user.getId());
         assertThrows(NotFoundException.class, () -> userService.get(user.getId()));
     }
