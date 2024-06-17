@@ -59,6 +59,15 @@ class BookingServiceImplTest {
         bookingRepository.deleteAll();
     }
 
+    @Test
+    void shouldNotCreateBookingForNotAvailableItemAndForOwnItem() {
+        Item notAvailableItem = itemRepository.save(new Item(null, "Item", "Item desc", false, owner.getId(), null));
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = start.plusDays(1);
+        assertThrows(ValidationException.class, () -> bookingService.createBooking(new CreateBookingArgs(notAvailableItem.getId(), start, end, booker.getId())));
+        assertThrows(NotFoundException.class, () -> bookingService.createBooking(new CreateBookingArgs(item.getId(), start, end, owner.getId())));
+    }
+
     @ParameterizedTest
     @MethodSource("argumentsForCorrectUser")
     void onlyCorrectUserShouldSeeBooking(Long userId, boolean canFetch) {
@@ -100,9 +109,14 @@ class BookingServiceImplTest {
         Booking updatedBookingRejected = bookingService.updateBookingStatus(owner.getId(), bookingToReject.getId(), false);
         assertThat(updatedBookingRejected.getStatus(), equalTo(BookingStatus.REJECTED));
 
+
         Booking bookingToDoubleUpdate = bookingService.createBooking(new CreateBookingArgs(item.getId(), LocalDateTime.now().minusYears(1), LocalDateTime.now().minusYears(1).plusDays(1), booker.getId()));
         assertThat(bookingToDoubleUpdate.getStatus(), equalTo(BookingStatus.WAITING));
+        // update by not owner
+        assertThrows(NotFoundException.class, () -> bookingService.updateBookingStatus(otherUser.getId(), bookingToDoubleUpdate.getId(), true));
+
         bookingService.updateBookingStatus(owner.getId(), bookingToDoubleUpdate.getId(), false);
         assertThrows(ValidationException.class, () -> bookingService.updateBookingStatus(owner.getId(), bookingToDoubleUpdate.getId(), true));
+
     }
 }

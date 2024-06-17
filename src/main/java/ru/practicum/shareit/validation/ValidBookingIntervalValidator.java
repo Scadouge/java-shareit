@@ -18,6 +18,6 @@ public class ValidBookingIntervalValidator implements ConstraintValidator<ValidB
         } catch (final Exception ignore) {
             // ignore
         }
-        return true;
+        return false;
     }
 }

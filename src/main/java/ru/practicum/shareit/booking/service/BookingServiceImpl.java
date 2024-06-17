@@ -59,9 +59,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public Booking updateBookingStatus(Long userId, Long bookingId, boolean approved) {
-        userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException(bookingId));
-        if (!Objects.equals(userId, booking.getItem().getOwnerId())) {
+        if (!isOwner(user, booking.getItem())) {
             throw new NotFoundException(bookingId);
         }
         if (booking.getStatus() != BookingStatus.WAITING) {
