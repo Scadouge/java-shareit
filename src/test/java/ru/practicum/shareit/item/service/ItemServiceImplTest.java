@@ -1,72 +1,70 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exception.NotAllowedException;
+import ru.practicum.shareit.item.args.CreateCommentArgs;
+import ru.practicum.shareit.item.args.CreateItemArgs;
+import ru.practicum.shareit.item.args.UpdateItemArgs;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.storage.CommentRepository;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import javax.validation.ValidationException;
+import java.time.LocalDateTime;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @SpringBootTest
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ItemServiceImplTest {
+    private final BookingRepository bookingRepository;
     private final ItemRepository itemRepository;
+    private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final ItemService itemService;
 
-    private Item availableItem1;
-    private Item availableItem2;
+    @Test
+    void shouldCreateAndGetAndUpdateItem() {
+        User otherUser = userRepository.save(new User(null, "User 1 name", "user1@mail.com"));
+        User owner = userRepository.save(new User(null, "User 2 name", "user2@mail.com"));
+        Item item = itemService.create(new CreateItemArgs(owner.getId(), "Item name", "Item desc", true, null));
+        Item savedItem = itemRepository.findById(item.getId()).orElseThrow();
+        assertEquals(savedItem, item);
+        assertEquals(savedItem, itemService.get(item.getId(), owner.getId()));
+        assertThat(itemService.getAll(owner.getId(), 0, 10), contains(item));
 
-    @BeforeAll
-    void setUp() {
-        User owner = userRepository.save(new User(null, "User 1", "user1@mail.com"));
-        availableItem1 = itemRepository.save(new Item(null, "Item 1 name", "Item 1 desc", true, owner.getId(), null));
-        availableItem2 = itemRepository.save(new Item(null, "Item 2 name", "Item 2 desc", true, owner.getId(), null));
-        Item notAvailableItem = itemRepository.save(new Item(null, "Item na name", "Item na desc", false, owner.getId(), null));
+        itemService.update(new UpdateItemArgs(null, "Updated desc", null), item.getId(), owner.getId());
+        Item updatedItem = itemRepository.findById(item.getId()).orElseThrow();
+        assertEquals("Item name", updatedItem.getName());
+        assertEquals("Updated desc", updatedItem.getDescription());
+        assertThrows(NotAllowedException.class, () -> itemService.update(new UpdateItemArgs(null, "Updated desc", null), item.getId(), otherUser.getId()));
     }
 
-    @AfterAll
-    void afterAll() {
-        userRepository.deleteAll();
-        itemRepository.deleteAll();
-    }
+    @Test
+    void shouldCreateCommentByCorrectUsers() {
+        User booker = userRepository.save(new User(null, "User 1 name", "user1@mail.com"));
+        User owner = userRepository.save(new User(null, "User 2 name", "user2@mail.com"));
+        Item item = itemService.create(new CreateItemArgs(owner.getId(), "Item name", "Item desc", true, null));
+        bookingRepository.save(new Booking(null, item, BookingStatus.APPROVED, booker, LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1)));
 
-    @ParameterizedTest
-    @MethodSource("argumentsForSearchAvailableItems")
-    void searchAvailableItems(String text, List<Item> expectedItems) {
-        final int from = 0;
-        final int size = 10;
-        Set<Long> itemIds = itemService.searchAvailableItems(text, from, size).stream().map(Item::getId).collect(Collectors.toSet());
-        Set<Long> expectedIds = expectedItems.stream().map(Item::getId).collect(Collectors.toSet());
-        assertEquals(expectedIds, itemIds);
-        assertThat(itemIds, containsInAnyOrder(expectedIds.toArray()));
-    }
-
-    Stream<Arguments> argumentsForSearchAvailableItems() {
-        return Stream.of(
-                Arguments.of("ItEm 2 desc", List.of(availableItem2)),
-                Arguments.of("IteM 1 N", List.of(availableItem1)),
-                Arguments.of("DeSc", List.of(availableItem1, availableItem2)),
-                Arguments.of("shouldNotFindAnything", List.of())
-        );
+        assertThrows(ValidationException.class, () -> itemService.createComment(new CreateCommentArgs(owner.getId(), item.getId(), "text")));
+        Comment comment = itemService.createComment(new CreateCommentArgs(booker.getId(), item.getId(), "text"));
+        Comment savedComment = commentRepository.findById(comment.getId()).orElseThrow();
+        assertEquals(savedComment, comment);
+        assertThrows(ValidationException.class, () -> itemService.createComment(new CreateCommentArgs(booker.getId(), item.getId(), "text")));
     }
 }
