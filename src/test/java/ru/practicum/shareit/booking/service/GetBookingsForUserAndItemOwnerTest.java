@@ -70,7 +70,6 @@ class GetBookingsForUserAndItemOwnerTest {
         bookingService.updateBookingStatus(itemByOwner1.getOwnerId(), futureBooking.getId(), true);
 
         currentBooking = bookingService.createBooking(new CreateBookingArgs(itemByOwner1.getId(), LocalDateTime.now(), LocalDateTime.now().plusDays(1), booker.getId()));
-        bookingService.updateBookingStatus(itemByOwner1.getOwnerId(), currentBooking.getId(), true);
 
         futureRejectedBooking = bookingService.createBooking(new CreateBookingArgs(itemByOwner2.getId(), LocalDateTime.now().plusMinutes(30), LocalDateTime.now().plusMinutes(10).plusDays(1), booker.getId()));
         bookingService.updateBookingStatus(itemByOwner2.getOwnerId(), futureRejectedBooking.getId(), false);
@@ -106,7 +105,7 @@ class GetBookingsForUserAndItemOwnerTest {
                 Arguments.of(booker.getId(), BookingState.CURRENT, List.of(currentBooking)),
                 Arguments.of(booker.getId(), BookingState.PAST, List.of(pastBooking)),
                 Arguments.of(booker.getId(), BookingState.FUTURE, List.of(futureBooking, futureRejectedBooking)),
-                Arguments.of(booker.getId(), BookingState.WAITING, List.of(futureBooking, currentBooking, pastBooking)),
+                Arguments.of(booker.getId(), BookingState.WAITING, List.of(currentBooking)),
                 Arguments.of(booker.getId(), BookingState.REJECTED, List.of(futureRejectedBooking)),
                 Arguments.of(booker.getId(), BookingState.UNKNOWN, List.of()),
                 Arguments.of(userWithoutBookings.getId(), BookingState.ALL, List.of())
@@ -129,7 +128,7 @@ class GetBookingsForUserAndItemOwnerTest {
                 Arguments.of(owner1.getId(), BookingState.CURRENT, List.of(currentBooking)),
                 Arguments.of(owner1.getId(), BookingState.PAST, List.of(pastBooking)),
                 Arguments.of(owner1.getId(), BookingState.FUTURE, List.of(futureBooking)),
-                Arguments.of(owner1.getId(), BookingState.WAITING, List.of(futureBooking, currentBooking, pastBooking)),
+                Arguments.of(owner1.getId(), BookingState.WAITING, List.of(currentBooking)),
                 Arguments.of(owner1.getId(), BookingState.REJECTED, List.of()),
                 Arguments.of(owner1.getId(), BookingState.UNKNOWN, List.of()),
 
@@ -142,7 +141,7 @@ class GetBookingsForUserAndItemOwnerTest {
         Map<Long, List<Booking>> itemLastBookingMapping = bookingService.getItemLastBookingMapping(Set.of(itemByOwner1.getId(), itemByOwner2.getId()));
 
         assertThat(itemLastBookingMapping.entrySet(), hasSize(1));
-        assertThat(itemLastBookingMapping.get(itemByOwner1.getId()), contains(currentBooking));
+        assertThat(itemLastBookingMapping.get(itemByOwner1.getId()), contains(pastBooking));
 
         Map<Long, List<Booking>> itemNextBookingMapping = bookingService.getItemNextBookingMapping(Set.of(itemByOwner1.getId(), itemByOwner2.getId()));
 
