@@ -14,6 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.item.args.UpdateItemArgs;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -26,7 +28,10 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.utils.Headers;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -63,6 +68,7 @@ class ItemControllerTest {
         item.setName("Item");
         item.setDescription("Item desc");
         item.setAvailable(true);
+        item.setOwnerId(999L);
     }
 
     @Test
@@ -95,11 +101,24 @@ class ItemControllerTest {
         final long userId = user.getId();
         final long itemId = item.getId();
         when(itemService.get(any(), any())).thenReturn(item);
+        Map<Long, List<Booking>> bookingMapping = new HashMap<>();
+        bookingMapping.put(itemId, List.of(new Booking(1L, item, BookingStatus.APPROVED, user, LocalDateTime.now(), LocalDateTime.now().plusDays(1))));
+        when(bookingService.getItemLastBookingMapping(any())).thenReturn(bookingMapping);
+        when(bookingService.getItemNextBookingMapping(any())).thenReturn(bookingMapping);
 
         MockHttpServletResponse response = performGetItem(userId, itemId);
         assertThat(response.getStatus(), is(200));
         assertThat(JsonPath.parse(response.getContentAsString()).read("$.id").toString(), is(String.valueOf(itemId)));
         verify(itemService, times(1)).get(any(), any());
+
+        // by owner
+        response = performGetItem(item.getOwnerId(), itemId);
+        assertThat(response.getStatus(), is(200));
+        assertThat(JsonPath.parse(response.getContentAsString()).read("$.id").toString(), is(String.valueOf(itemId)));
+
+        verify(itemService, times(2)).get(any(), any());
+        verify(bookingService, times(1)).getItemLastBookingMapping(any());
+        verify(bookingService, times(1)).getItemNextBookingMapping(any());
     }
 
     private MockHttpServletResponse performGetItem(Long userId, Long itemId) throws Exception {

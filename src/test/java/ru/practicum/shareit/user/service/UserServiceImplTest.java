@@ -24,6 +24,7 @@ class UserServiceImplTest {
 
     @Test
     void shouldSaveAndUpdateAndGetAndDeleteUser() {
+        User nonExistentUser = new User(999L, "User 1", "user1@mail.com");
         User user = userService.create(new User(null, "User 1", "user1@mail.com"));
         User savedUser = userRepository.findById(user.getId()).orElseThrow();
         assertEquals(savedUser, user);
@@ -31,11 +32,12 @@ class UserServiceImplTest {
         assertThat(userService.getAll(), contains(savedUser));
 
         final User userUpdater = new User(null, "User updated name", null);
+        assertThrows(NotFoundException.class, () -> userService.update(userUpdater, nonExistentUser.getId()));
         userService.update(userUpdater, user.getId());
         assertEquals(savedUser.getName(), "User updated name");
         assertEquals(savedUser.getEmail(), "user1@mail.com");
 
-        userRepository.deleteById(user.getId());
+        userService.delete(user.getId());
         assertThrows(NotFoundException.class, () -> userService.get(user.getId()));
     }
 }
