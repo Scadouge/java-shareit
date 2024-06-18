@@ -16,32 +16,32 @@ public class CustomBookingRepositoryImpl implements CustomBookingRepository {
     private EntityManager entityManager;
 
     @Override
-    public List<Booking> findLastBookingWithStatus(Set<Long> itemIds, LocalDateTime now,
+    public List<Booking> findLastBookingWithStatus(Set<Long> itemIds, LocalDateTime time,
                                                    BookingStatus status) {
         String sql = "SELECT DISTINCT ON (item_id) bk.* " +
                 "FROM bookings bk " +
-                "WHERE bk.item_id IN ?1 AND (bk.date_end < ?2 OR bk.date_start < ?3 AND bk.date_end > ?4) AND bk.status = ?5 " +
+                "WHERE bk.item_id IN :itemIds AND (bk.date_end < :dateTime OR bk.date_start < :dateTime AND bk.date_end > :dateTime) AND bk.status = :status " +
                 "ORDER BY bk.date_end DESC";
         return entityManager.createNativeQuery(sql, Booking.class)
-                .setParameter(1, itemIds)
-                .setParameter(2, now)
-                .setParameter(3, now)
-                .setParameter(4, now)
-                .setParameter(5, status.toString())
+                .setParameter("itemIds", itemIds)
+                .setParameter("dateTime", time)
+                .setParameter("dateTime", time)
+                .setParameter("dateTime", time)
+                .setParameter("status", status.toString())
                 .getResultList();
     }
 
     @Override
-    public List<Booking> findNextBookingWithStatus(Set<Long> itemIds, LocalDateTime now,
+    public List<Booking> findNextBookingWithStatus(Set<Long> itemIds, LocalDateTime time,
                                                    BookingStatus status) {
         String sql = "SELECT DISTINCT ON (item_id) bk.* " +
                 "FROM bookings bk " +
-                "WHERE bk.item_id IN ?1 AND bk.date_start > ?2 AND bk.status = ?3 " +
+                "WHERE bk.item_id IN :itemIds AND bk.date_start > :time AND bk.status = :status " +
                 "ORDER BY bk.date_start";
         return entityManager.createNativeQuery(sql, Booking.class)
-                .setParameter(1, itemIds)
-                .setParameter(2, now)
-                .setParameter(3, status.toString())
+                .setParameter("itemIds", itemIds)
+                .setParameter("time", time)
+                .setParameter("status", status.toString())
                 .getResultList();
     }
 }
