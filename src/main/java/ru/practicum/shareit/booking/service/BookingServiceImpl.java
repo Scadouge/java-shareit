@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
 public class BookingServiceImpl implements BookingService {
@@ -72,7 +73,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Booking getBooking(Long userId, Long bookingId) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException(bookingId));
@@ -87,7 +87,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<Booking> getBookingsForUser(Long userId, BookingState state, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         List<Booking> result;
@@ -119,7 +118,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<Booking> getBookingsForItemOwner(Long userId, BookingState state, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         List<Booking> result;
@@ -151,7 +149,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Map<Long, List<Booking>> getItemLastBookingMapping(Set<Long> itemIds) {
         LocalDateTime now = LocalDateTime.now();
         Map<Long, List<Booking>> lastBookingMapping;
@@ -162,7 +159,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Map<Long, List<Booking>> getItemNextBookingMapping(Set<Long> itemIds) {
         LocalDateTime now = LocalDateTime.now();
         Map<Long, List<Booking>> nextBookingMapping;

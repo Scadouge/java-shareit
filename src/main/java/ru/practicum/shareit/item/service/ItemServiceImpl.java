@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
@@ -46,14 +47,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Item get(Long id, Long userId) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         return itemRepository.findById(id, Item.class).orElseThrow(() -> new NotFoundException(id));
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<Item> getAll(Long userId, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         Pageable page = Pagination.getPage(from, size);
@@ -74,7 +73,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<Item> searchAvailableItems(String text, int from, int size) {
         Pageable page = Pagination.getPage(from, size);
         return itemRepository.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailable(text,
@@ -97,7 +95,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Map<Long, List<Comment>> getItemCommentMapping(Set<Long> itemIds) {
         Map<Long, List<Comment>> commentMapping;
         commentMapping = commentRepository.findAllByItemIdIn(itemIds)
@@ -106,7 +103,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Map<Long, List<Item>> getRequestItemMapping(Set<Long> requestIds) {
         return itemRepository.findAllByRequestIdIn(requestIds)
                 .stream().collect(Collectors.groupingBy(Item::getRequestId));

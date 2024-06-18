@@ -16,6 +16,7 @@ import ru.practicum.shareit.utils.Pagination;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
@@ -30,7 +31,6 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<Request> getOwnRequests(Long userId, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         Pageable page = Pagination.getPage(from, size, Sort.by("created").descending());
@@ -38,7 +38,6 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<Request> getAllRequests(Long userId, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         Pageable page = Pagination.getPage(from, size, Sort.by("created").descending());
@@ -46,7 +45,6 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Request getRequest(Long userId, Long requestId) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
         return requestRepository.findById(requestId).orElseThrow(() -> new NotFoundException(requestId));

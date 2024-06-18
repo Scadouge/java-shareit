@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
@@ -24,13 +25,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public User get(Long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Collection<User> getAll() {
         return userRepository.findAll();
     }
