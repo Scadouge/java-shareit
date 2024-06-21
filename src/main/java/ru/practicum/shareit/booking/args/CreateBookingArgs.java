@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Value
 @RequiredArgsConstructor
 @Builder(toBuilder = true)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class CreateBookingArgs {
     Long itemId;
 
