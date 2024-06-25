@@ -34,4 +34,9 @@ public class SqlHelper {
     public static final String COMMENT_TEXT = "text";
     public static final String COMMENT_CREATED = "created";
 
+    public static final String TABLE_REQUESTS = "requests";
+    public static final String REQUEST_ID = "id";
+    public static final String REQUEST_DESCRIPTION = "description";
+    public static final String REQUEST_CREATED = "created";
+    public static final String REQUEST_USER_ID = "user_id";
 }
