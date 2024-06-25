@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking.args;
 
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
