@@ -9,6 +9,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.NotAllowedException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.args.CreateCommentArgs;
 import ru.practicum.shareit.item.args.CreateItemArgs;
 import ru.practicum.shareit.item.args.UpdateItemArgs;
@@ -21,7 +22,6 @@ import ru.practicum.shareit.request.storage.RequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
-import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;

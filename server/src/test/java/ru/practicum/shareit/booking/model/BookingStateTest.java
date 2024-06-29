@@ -1,8 +1,7 @@
 package ru.practicum.shareit.booking.model;
 
 import org.junit.jupiter.api.Test;
-
-import javax.validation.ValidationException;
+import ru.practicum.shareit.exception.ValidationException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
