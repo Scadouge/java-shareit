@@ -28,11 +28,11 @@ public class RequestClient extends BaseClient {
         );
     }
 
-    ResponseEntity<Object> createRequest(long userId, RequestDto requestDto) {
+    public ResponseEntity<Object> createRequest(long userId, RequestDto requestDto) {
         return post("", userId, requestDto);
     }
 
-    ResponseEntity<Object> getOwnRequests(long userId, int from, int size) {
+    public ResponseEntity<Object> getOwnRequests(long userId, int from, int size) {
         Map<String, Object> parameters = Map.of(
                 "from", from,
                 "size", size
@@ -40,7 +40,7 @@ public class RequestClient extends BaseClient {
         return get("?from={from}&size={size}", userId, parameters);
     }
 
-    ResponseEntity<Object> getAllRequests(long userId, int from, int size) {
+    public ResponseEntity<Object> getAllRequests(long userId, int from, int size) {
         Map<String, Object> parameters = Map.of(
                 "from", from,
                 "size", size
@@ -48,7 +48,7 @@ public class RequestClient extends BaseClient {
         return get("/all?from={from}&size={size}", userId, parameters);
     }
 
-    ResponseEntity<Object> getRequest(long userId, long requestId) {
+    public ResponseEntity<Object> getRequest(long userId, long requestId) {
         return get(String.format("/%s", requestId), userId);
     }
 }
