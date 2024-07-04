@@ -37,7 +37,7 @@ services:
     container_name: shareit-db
     image: postgres:16.3-alpine
     volumes:
-      - /var/lib/postgresql/data/
+      - vol:/var/lib/postgresql/data/
     ports:
       - "5433:5432"
     environment:
@@ -49,3 +49,6 @@ services:
       timeout: 5s
       interval: 5s
       retries: 10
+
+volumes:
+  vol:
